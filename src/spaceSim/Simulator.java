@@ -30,8 +30,8 @@ public class Simulator extends Thread {
 					double x = R.nextDouble() * 1000;
 					double y = R.nextDouble() * 800;
 					double r = R.nextDouble() * 5;
-					Color c = new Color(R.nextInt(256), R.nextInt(256),R.nextInt(256));
-					dots.add(new Dot(x, y, r,c));
+					Color c = new Color(R.nextInt(256), R.nextInt(256), R.nextInt(256));
+					dots.add(new Dot(x, y, r, c));
 				}
 				queue.put(new Message(dots));
 			}

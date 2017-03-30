@@ -47,7 +47,7 @@ public class VectorTest {
 	@Test
 	public void testMultiplyVectorByScale() throws Exception {
 		Vector2D v1 = new Vector2D(5, -8);
-		Vector2D v2 = v1.mult(3);
+		Vector2D v2 = v1.scale(3);
 		assertEquals(15, v2.getX(), 0.05);
 		assertEquals(-24, v2.getY(), 0.05);
 		assertEquals(28.3, v2.mag(), 0.5);

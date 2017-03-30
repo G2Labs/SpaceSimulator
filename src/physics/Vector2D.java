@@ -34,7 +34,7 @@ public class Vector2D {
 		return new Vector2D(this.x - v2.x, this.y - v2.y);
 	}
 
-	public Vector2D mult(double n) {
+	public Vector2D scale(double n) {
 		return new Vector2D(this.x * n, this.y * n);
 	}
 
