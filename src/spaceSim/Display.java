@@ -2,6 +2,8 @@ package spaceSim;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -9,7 +11,7 @@ import java.util.Random;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-public class Display extends JFrame{
+public class Display extends JFrame implements KeyListener{
 	private ArrayList<ArrayList<Dot>> worldHistory = new ArrayList<>();
 	private Integer cnt = 0;
 	private Random R = new Random();
@@ -40,5 +42,23 @@ public class Display extends JFrame{
 			worldHistory.remove(R.nextInt(100) + 100);
 		}
 		this.repaint();
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 }
