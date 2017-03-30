@@ -4,10 +4,10 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 
 public class DisplayThread extends Thread {
-	private BlockingQueue<List<Dot>> queue;
+	private BlockingQueue<Message> queue;
 	private Display display;
 
-	public DisplayThread(BlockingQueue<List<Dot>> queue) {
+	public DisplayThread(BlockingQueue<Message> queue) {
 		this.queue = queue;
 	}
 
@@ -16,7 +16,7 @@ public class DisplayThread extends Thread {
 		display = new Display();
 		try {
 			while (true) {
-				display.getData(queue.take());
+				display.insertNewData(queue.take());
 			}
 		} catch (InterruptedException e) {
 		}
