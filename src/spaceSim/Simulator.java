@@ -12,7 +12,6 @@ public class Simulator extends Thread {
 	private final BlockingQueue<Message> queue;
 	private final Random R = new Random();
 	private boolean canRun = true;
-	private Vector2D force = new Vector2D(1, 1);
 
 	public Simulator(BlockingQueue<Message> queue) {
 		this.queue = queue;
@@ -25,15 +24,15 @@ public class Simulator extends Thread {
 	@Override
 	public void run() {
 		world = new ArrayList<>();
-		world.add(new Mover("Sun", 50, new Vector2D(500, 400)));
-		for (int i = 0; i < 99; i++) {
+		world.add(new Mover("Sun", 60, new Vector2D(500, 400)));
+		for (int i = 0; i < 499; i++) {
 			world.add(
 					new Mover("Mover" + i, R.nextDouble() * 5 + 1, new Vector2D(R.nextDouble() * 1000, R.nextDouble() * 800)));
 		}
-
+		Mover.setDeltaT(0.5);
 		try {
 			while (canRun) {
-				Thread.sleep(50);
+				Thread.sleep(10);
 				oneIteration();
 				queue.put(new Message(world));
 			}
@@ -43,8 +42,8 @@ public class Simulator extends Thread {
 
 	private void oneIteration() {
 		ArrayList<Mover> newWorld = new ArrayList<>();
-
-		for (int i = 0; i < world.size(); i++) {
+		newWorld.add(world.get(0));
+		for (int i = 1; i < world.size(); i++) {
 			Mover m1 = world.get(i);
 			Vector2D gravity = new Vector2D();
 
@@ -57,7 +56,8 @@ public class Simulator extends Thread {
 				double dist = gravityPortion.mag();
 				if (dist < 0.01)
 					continue;
-				double gravityMag = 0.5 * m1.getMass() * m2.getMass() / (dist * dist);
+
+				double gravityMag = 1 * m1.getMass() * m2.getMass() / (dist * dist);
 				gravity = gravity.add(gravityPortion.normalize().scale(gravityMag));
 			}
 			m1.applyForce(gravity);

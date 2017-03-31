@@ -3,15 +3,15 @@ package physics;
 public class Vector2D {
 	private double x, y, size;
 
+	public Vector2D() {
+		this.x = 0;
+		this.y = 0;
+	}
+
 	public Vector2D(double x, double y) {
 		this.x = x;
 		this.y = y;
 		this.size = Math.sqrt(x * x + y * y);
-	}
-
-	public Vector2D() {
-		this.x = 0;
-		this.y = 0;
 	}
 
 	public double mag() {
@@ -39,8 +39,27 @@ public class Vector2D {
 	}
 
 	public Vector2D normalize() {
-		if (size < 0.00001)
+		if (size > 0)
+			return new Vector2D(this.x / size, this.y / size);
+		else
 			return new Vector2D();
-		return new Vector2D(this.x / size, this.y / size);
+	}
+
+	@Override
+	public boolean equals(Object vec) {
+		Vector2D v = (Vector2D) vec;
+
+		boolean xEqual = Math.abs(this.x - v.x) < 0.0000001;
+		boolean yEqual = Math.abs(this.y - v.y) < 0.0000001;
+		return (xEqual && yEqual);
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("[").append(String.format("%.2f", this.x)).append("; ");
+		sb.append(String.format("%.2f", this.y)).append("]");
+
+		return sb.toString();
 	}
 }

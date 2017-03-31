@@ -1,6 +1,7 @@
 package physics;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import org.junit.Test;
 
@@ -60,5 +61,29 @@ public class VectorTest {
 		assertEquals(0.53, v2.getX(), 0.05);
 		assertEquals(-0.84, v2.getY(), 0.05);
 		assertEquals(1, v2.mag(), 0.05);
+
+		v1 = new Vector2D();
+		assertEquals(0, v1.normalize().mag(), 0.05);
+		v1 = new Vector2D(0.0003, 0.002);
+		assertEquals(1, v1.normalize().mag(), 0.05);
+	}
+
+	@Test
+	public void testForEquality() throws Exception {
+		Vector2D v1 = new Vector2D();
+		Vector2D v2 = new Vector2D();
+		assertEquals(v1, new Vector2D());
+		assertEquals(v1, new Vector2D());
+		assertEquals(v1, v2);
+		Vector2D v3 = new Vector2D(0, 1);
+		assertFalse(v1.equals(v3));
+		Vector2D v4 = new Vector2D(1, 0);
+		assertFalse(v1.equals(v4));
+	}
+
+	@Test
+	public void testToString() throws Exception {
+		Vector2D v1 = new Vector2D(1, 2);
+		assertEquals("[1,00; 2,00]", v1.toString());
 	}
 }

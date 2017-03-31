@@ -1,6 +1,7 @@
 package physics;
 
 public class Mover {
+	private static double deltaT = 0.01;
 	private Vector2D position = new Vector2D();
 	private Vector2D velocit = new Vector2D();
 	private Vector2D force = new Vector2D();
@@ -25,8 +26,8 @@ public class Mover {
 	public Mover move() {
 		double fMag = force.mag();
 		Vector2D a = force.normalize().scale(fMag / mass);
-		Vector2D v = velocit.add(a);
-		Vector2D p = position.add(v);
+		Vector2D v = velocit.add(a.scale(deltaT));
+		Vector2D p = position.add(v.scale(deltaT));
 
 		Mover newMover = new Mover(this.name, this.mass, this.position);
 		newMover.force = force;
@@ -41,5 +42,9 @@ public class Mover {
 
 	public double getMass() {
 		return mass;
+	}
+
+	public static void setDeltaT(double newVal) {
+		deltaT = newVal;
 	}
 }

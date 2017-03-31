@@ -21,7 +21,6 @@ public class Display extends JFrame implements KeyListener {
 	private Integer historyLimit = 50;
 	private Random R = new Random();
 	private DrawArea drawArea;
-	private boolean canLoad = true;
 
 	public Display() {
 		drawArea = new DrawArea();
@@ -49,46 +48,39 @@ public class Display extends JFrame implements KeyListener {
 				size = worldHistory.get(0).size();
 
 			StringBuilder sb = new StringBuilder();
-			sb.append("Skala:").append(scale).append(" ");
-			sb.append("Obiektów: ").append(size).append(" ");
+			sb.append("Skala:").append(String.format("%.1f", scale)).append(" ");
+			sb.append("ObiektÃ³w: ").append(size).append(" ");
 			sb.append("Iteracja: ").append(cnt);
 			g.drawString(sb.toString(), 10, h - 10);
 
-			canLoad = false;
-			for (int i = 0; i < worldHistory.size(); i++) {
-				boolean currentOne = (i == worldHistory.size() - 1);
-				List<Mover> currentWorld = worldHistory.get(i);
+			synchronized (this) {
+				for (int i = 0; i < worldHistory.size(); i++) {
+					boolean currentOne = (i == worldHistory.size() - 1);
+					List<Mover> currentWorld = worldHistory.get(i);
 
-				for (int j = 0; j < currentWorld.size(); j++) {
-					Mover m = currentWorld.get(j);
-					int x = (int) m.getPosition().getX();
-					int y = (int) m.getPosition().getY();
-					int r = (int) m.getMass();
-					int R = r;
-					if (currentOne)
-						R = r * 2;
-					else
-						R = 2;
-					x += r;
-					y += r;
-					if ((x > w) || (x < 0))
-						continue;
-					if ((y > (h - 30)) || (y < 0))
-						continue;
-					drawCosmicElement(g, x, y, r, currentOne);
+					for (int j = 0; j < currentWorld.size(); j++) {
+						Mover m = currentWorld.get(j);
+						int x = (int) m.getPosition().getX();
+						int y = (int) m.getPosition().getY();
+						int r = (int) m.getMass();
+						if ((x > w) || (x < 0))
+							continue;
+						if ((y > (h - 30)) || (y < 0))
+							continue;
+						drawCosmicElement(g, x, y, r, currentOne);
+					}
 				}
 			}
-			canLoad = true;
 		}
 	}
 
 	private void drawCosmicElement(Graphics g, int x, int y, int mass, boolean isCurrent) {
-		int r = (isCurrent) ? mass : 2;
+		int radius = (isCurrent) ? mass : 2;
 		g.setColor(computeColorFromMass(mass));
-		x -= r;
-		y -= r;
-		g.setColor(computeColorFromMass(r));
-		g.fillOval(x, y, r, r);
+		x -= radius / 2;
+		y -= radius / 2;
+		g.setColor(computeColorFromMass(radius));
+		g.fillOval(x, y, radius, radius);
 	}
 
 	private Color computeColorFromMass(double mass) {
@@ -103,12 +95,10 @@ public class Display extends JFrame implements KeyListener {
 		return Color.BLACK;
 	}
 
-	public void insertNewData(Message message) {
-		while (!canLoad) {
-		}
+	public synchronized void insertNewData(Message message) {
 		worldHistory.add((ArrayList<Mover>) message.getData());
 		if (worldHistory.size() > historyLimit) {
-			worldHistory.remove(R.nextInt(historyLimit / 4));
+			worldHistory.remove(R.nextInt(historyLimit / 2));
 		}
 		cnt++;
 		this.repaint();
