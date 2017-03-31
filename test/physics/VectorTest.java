@@ -48,7 +48,7 @@ public class VectorTest {
 	@Test
 	public void testMultiplyVectorByScale() throws Exception {
 		Vector2D v1 = new Vector2D(5, -8);
-		Vector2D v2 = v1.scale(3);
+		Vector2D v2 = v1.mul(3);
 		assertEquals(15, v2.getX(), 0.05);
 		assertEquals(-24, v2.getY(), 0.05);
 		assertEquals(28.3, v2.mag(), 0.5);
@@ -57,15 +57,15 @@ public class VectorTest {
 	@Test
 	public void testNormalizeAVector() throws Exception {
 		Vector2D v1 = new Vector2D(5, -8);
-		Vector2D v2 = v1.normalize();
+		Vector2D v2 = v1.norm();
 		assertEquals(0.53, v2.getX(), 0.05);
 		assertEquals(-0.84, v2.getY(), 0.05);
 		assertEquals(1, v2.mag(), 0.05);
 
 		v1 = new Vector2D();
-		assertEquals(0, v1.normalize().mag(), 0.05);
+		assertEquals(0, v1.norm().mag(), 0.05);
 		v1 = new Vector2D(0.0003, 0.002);
-		assertEquals(1, v1.normalize().mag(), 0.05);
+		assertEquals(1, v1.norm().mag(), 0.05);
 	}
 
 	@Test
