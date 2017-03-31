@@ -39,6 +39,8 @@ public class Vector2D {
 	}
 
 	public Vector2D normalize() {
+		if (size < 0.00001)
+			return new Vector2D();
 		return new Vector2D(this.x / size, this.y / size);
 	}
 }

@@ -6,18 +6,19 @@ import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import physics.Mover;
+
 public class Display extends JFrame implements KeyListener {
-	private ArrayList<ArrayList<Dot>> worldHistory = new ArrayList<>();
+	private ArrayList<ArrayList<Mover>> worldHistory = new ArrayList<>();
 	private Double scale = 1.0;
 	private Integer cnt = 0;
-	private Integer historyLimit = 200;
+	private Integer historyLimit = 50;
 	private Random R = new Random();
 	private DrawArea drawArea;
 	private boolean canLoad = true;
@@ -55,37 +56,59 @@ public class Display extends JFrame implements KeyListener {
 
 			canLoad = false;
 			for (int i = 0; i < worldHistory.size(); i++) {
-				boolean currentOne = (i == 0);
-				List<Dot> currentWorld = worldHistory.get(i);
-				
-				for(int j = 0; j<currentWorld.size();j++){
-					Dot dot = currentWorld.get(j);
-					int x = (int) dot.getX().doubleValue();
-					int y = (int) dot.getY().doubleValue();
-					int r = (int) dot.getRadius().doubleValue();		
-					r *= 2;
-					x -= r;
-					y -= r;
+				boolean currentOne = (i == worldHistory.size() - 1);
+				List<Mover> currentWorld = worldHistory.get(i);
+
+				for (int j = 0; j < currentWorld.size(); j++) {
+					Mover m = currentWorld.get(j);
+					int x = (int) m.getPosition().getX();
+					int y = (int) m.getPosition().getY();
+					int r = (int) m.getMass();
+					int R = r;
+					if (currentOne)
+						R = r * 2;
+					else
+						R = 2;
+					x += r;
+					y += r;
 					if ((x > w) || (x < 0))
 						continue;
 					if ((y > (h - 30)) || (y < 0))
 						continue;
-					g.setColor(dot.getColor());
-					if(!currentOne)
-						r=2;
-					g.fillOval(x, y, r, r);			
+					drawCosmicElement(g, x, y, r, currentOne);
 				}
 			}
 			canLoad = true;
 		}
 	}
 
+	private void drawCosmicElement(Graphics g, int x, int y, int mass, boolean isCurrent) {
+		int r = (isCurrent) ? mass : 2;
+		g.setColor(computeColorFromMass(mass));
+		x -= r;
+		y -= r;
+		g.setColor(computeColorFromMass(r));
+		g.fillOval(x, y, r, r);
+	}
+
+	private Color computeColorFromMass(double mass) {
+		if (mass > 10)
+			return Color.YELLOW;
+		if (mass > 5)
+			return Color.BLUE;
+		if (mass > 2)
+			return Color.GREEN;
+		if (mass > 1)
+			return Color.RED;
+		return Color.BLACK;
+	}
+
 	public void insertNewData(Message message) {
 		while (!canLoad) {
 		}
-		worldHistory.add(0, (ArrayList<Dot>) message.getData());
+		worldHistory.add((ArrayList<Mover>) message.getData());
 		if (worldHistory.size() > historyLimit) {
-			worldHistory.remove(R.nextInt(historyLimit / 2) + (historyLimit / 2));
+			worldHistory.remove(R.nextInt(historyLimit / 4));
 		}
 		cnt++;
 		this.repaint();

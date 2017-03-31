@@ -2,14 +2,16 @@ package spaceSim;
 
 import java.util.List;
 
-public class Message {
-	private List<Dot> listOfDots;
+import physics.Mover;
 
-	public Message(List<Dot> list) {
+public class Message {
+	private List<Mover> listOfDots;
+
+	public Message(List<Mover> list) {
 		listOfDots = list;
 	}
 
-	public List<Dot> getData() {
+	public List<Mover> getData() {
 		return listOfDots;
 	}
 }
