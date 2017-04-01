@@ -1,27 +1,44 @@
 package physics;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
-public class Universe implements Iterable<SpaceObject> {
-	private List<SpaceObject> objects = new ArrayList<>();
+public class Universe extends ArrayList<SpaceObject> {
 
-	public Universe() {
-
+	public void move() {
+		for (SpaceObject so : this)
+			so.move();
 	}
 
-	public int size() {
-		return objects.size();
+	public Universe copy() {
+		Universe newUniverse = new Universe();
+		for (SpaceObject so : this)
+			newUniverse.add(so.copy());
+		return newUniverse;
 	}
 
-	public void add(SpaceObject spaceObject) {
-		objects.add(spaceObject);
+	public void applyGravity() {
+		for (int i = 0; i < size(); i++) {
+			Vector2D gravity = new Vector2D();
+			SpaceObject s0 = get(i);
+
+			for (int j = 0; j < size(); j++) {
+				if (i == j)
+					continue;
+				SpaceObject s1 = get(j);
+
+				gravity = gravity.add(calcGravityBetween(s0, s1));
+			}
+			s0.applyForce(gravity);
+		}
 	}
 
-	@Override
-	public Iterator<SpaceObject> iterator() {
-		return objects.iterator();
+	private Vector2D calcGravityBetween(SpaceObject s0, SpaceObject s1) {
+		Vector2D gravPart = s1.getPosition().sub(s0.getPosition());
+		double dist = gravPart.mag();
+
+		double gravMag = 1 * (s0.getMass() * s1.getMass()) / (dist * dist);
+		gravPart = gravPart.norm().mul(gravMag);
+		return gravPart;
 	}
 
 }

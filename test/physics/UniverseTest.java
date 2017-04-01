@@ -36,4 +36,42 @@ public class UniverseTest {
 		}
 	}
 
+	@Test
+	public void testMoveSimulation() throws Exception {
+		Universe u = new Universe();
+		for (int i = 0; i < 100; i++)
+			u.add(new MassObject("M" + i, 1, new Vector2D(i, i), new Vector2D(1, 1)));
+
+		for (int i = 0; i < 100; i++)
+			assertEquals(new Vector2D(i, i), u.get(i).getPosition());
+
+		MassObject.setDeltaT(1);
+		u.move();
+
+		for (int i = 0; i < 100; i++)
+			assertEquals(new Vector2D(i + 1, i + 1), u.get(i).getPosition());
+
+		Universe newOne = u.copy();
+		u.move();
+
+		for (int i = 0; i < 100; i++) {
+			assertEquals(new Vector2D(i + 1, i + 1), newOne.get(i).getPosition());
+			assertEquals(new Vector2D(i + 2, i + 2), u.get(i).getPosition());
+		}
+	}
+
+	@Test
+	public void testForGravity() throws Exception {
+		MassObject.setDeltaT(1);
+
+		Universe u = new Universe();
+		u.add(new MassObject("Sun", 40));
+		u.add(new MassObject("Planetoid", 2, new Vector2D(10, 0)));
+
+		u.applyGravity();
+		u.move();
+
+		assertEquals(new Vector2D(0.02, 0), u.get(0).getPosition());
+		assertEquals(new Vector2D(9.6, 0), u.get(1).getPosition());
+	}
 }

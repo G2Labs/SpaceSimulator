@@ -38,27 +38,19 @@ public class Display extends JFrame implements KeyListener {
 		}
 
 		@Override
-		protected void paintComponent(Graphics g) {
+		protected synchronized void paintComponent(Graphics g) {
 			super.paintComponent(g);
-			double h = this.getSize().getHeight();
-			double w = this.getSize().getWidth();
+			Dimension screen = this.getSize();
 			int cntOnScreen = 0;
 
-			synchronized (this) {
-				for (int i = 0; i < worldHistory.size(); i++) {
-					boolean currentOne = (i == worldHistory.size() - 1);
-					List<SpaceObject> currentWorld = worldHistory.get(i);
+			for (int i = 0; i < worldHistory.size(); i++) {
+				boolean currentOne = (i == worldHistory.size() - 1);
+				List<SpaceObject> currentWorld = worldHistory.get(i);
 
-					for (int j = 0; j < currentWorld.size(); j++) {
-						SpaceObject m = currentWorld.get(j);
-						double x = m.getPosition().getX();
-						double y = m.getPosition().getY();
-						double r = m.getMass();
-						if ((x > w) || (x < 0))
-							continue;
-						if ((y > (h - 30)) || (y < 0))
-							continue;
-						drawCosmicElement(g, x, y, r, currentOne);
+				for (int j = 0; j < currentWorld.size(); j++) {
+					SpaceObject m = currentWorld.get(j);
+					if (isObjectOnScreen(m, screen)) {
+						drawCosmicElement(g, m, currentOne);
 						if (currentOne)
 							cntOnScreen++;
 					}
@@ -66,20 +58,36 @@ public class Display extends JFrame implements KeyListener {
 			}
 
 			StringBuilder sb = new StringBuilder();
-			sb.append("Skala:").append(String.format("%.1f", scale)).append(" ");
-			sb.append("Obiektów: ").append(cntOnScreen).append(" ");
-			sb.append("Iteracja: ").append(cnt);
+			sb.append("Scale:").append(String.format("%.1f", scale)).append(" ");
+			sb.append("Objects: ").append(cntOnScreen).append(" ");
+			sb.append("Iteration: ").append(cnt);
 			g.setColor(Color.BLACK);
-			g.drawString(sb.toString(), 10, (int) h - 10);
+			g.drawString(sb.toString(), 10, (int) screen.getHeight() - 10);
 		}
 	}
 
-	private void drawCosmicElement(Graphics g, double x, double y, double mass, boolean isCurrent) {
-		double radius = (isCurrent) ? mass : 2;
-		radius = (mass > 10) ? 10 : 2;
-		x -= radius / 2;
-		y -= radius / 2;
-		g.setColor(computeColorFromMass(mass));
+	private boolean isObjectOnScreen(SpaceObject so, Dimension screen) {
+		double x = so.getPosition().getX();
+		double y = so.getPosition().getY();
+
+		if ((x * scale > screen.getWidth()) || (x < 0))
+			return false;
+		if ((y * scale > (screen.getHeight() - 30)) || (y < 0))
+			return false;
+		return true;
+	}
+
+	private void drawCosmicElement(Graphics g, SpaceObject so, boolean isCurrent) {
+		double minR = 3;
+		double radius = (isCurrent) ? ((so.getMass() > 10) ? so.getMass() : minR) : minR;
+		double x = (so.getPosition().getX()) - (radius / 2);
+		double y = (so.getPosition().getY()) - (radius / 2);
+
+		x *= scale;
+		y *= scale;
+		radius = (radius * scale < minR) ? minR : radius * scale;
+
+		g.setColor(computeColorFromMass(so.getMass()));
 		g.fillOval((int) x, (int) y, (int) radius, (int) radius);
 	}
 
