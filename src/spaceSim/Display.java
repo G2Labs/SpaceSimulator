@@ -12,14 +12,14 @@ import java.util.Random;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import physics.MassObject;
+import physics.SpaceObject;
 
 public class Display extends JFrame implements KeyListener {
-	private ArrayList<ArrayList<MassObject>> worldHistory = new ArrayList<>();
+	private ArrayList<ArrayList<SpaceObject>> worldHistory = new ArrayList<>();
 	private Double scale = 1.0;
 	private Integer cnt = 0;
 	private Integer historyLimit = 50;
-	private Random R = new Random();
+	private static final Random R = new Random();
 	private DrawArea drawArea;
 
 	public Display() {
@@ -40,23 +40,20 @@ public class Display extends JFrame implements KeyListener {
 		@Override
 		protected void paintComponent(Graphics g) {
 			super.paintComponent(g);
-			int h = (int) this.getSize().getHeight();
-			int w = (int) this.getSize().getWidth();
-			int size = 0, cntOnScreen = 0;
-
-			if (!worldHistory.isEmpty())
-				size = worldHistory.get(0).size();
+			double h = this.getSize().getHeight();
+			double w = this.getSize().getWidth();
+			int cntOnScreen = 0;
 
 			synchronized (this) {
 				for (int i = 0; i < worldHistory.size(); i++) {
 					boolean currentOne = (i == worldHistory.size() - 1);
-					List<MassObject> currentWorld = worldHistory.get(i);
+					List<SpaceObject> currentWorld = worldHistory.get(i);
 
 					for (int j = 0; j < currentWorld.size(); j++) {
-						MassObject m = currentWorld.get(j);
-						int x = (int) m.getPosition().getX();
-						int y = (int) m.getPosition().getY();
-						int r = (int) m.getMass();
+						SpaceObject m = currentWorld.get(j);
+						double x = m.getPosition().getX();
+						double y = m.getPosition().getY();
+						double r = m.getMass();
 						if ((x > w) || (x < 0))
 							continue;
 						if ((y > (h - 30)) || (y < 0))
@@ -73,18 +70,17 @@ public class Display extends JFrame implements KeyListener {
 			sb.append("Obiektów: ").append(cntOnScreen).append(" ");
 			sb.append("Iteracja: ").append(cnt);
 			g.setColor(Color.BLACK);
-			g.drawString(sb.toString(), 10, h - 10);
+			g.drawString(sb.toString(), 10, (int) h - 10);
 		}
 	}
 
-	private void drawCosmicElement(Graphics g, int x, int y, int mass, boolean isCurrent) {
-		int radius = (isCurrent) ? mass : 2;
+	private void drawCosmicElement(Graphics g, double x, double y, double mass, boolean isCurrent) {
+		double radius = (isCurrent) ? mass : 2;
 		radius = (mass > 10) ? 10 : 2;
-		g.setColor(computeColorFromMass(mass));
 		x -= radius / 2;
 		y -= radius / 2;
 		g.setColor(computeColorFromMass(mass));
-		g.fillOval(x, y, radius, radius);
+		g.fillOval((int) x, (int) y, (int) radius, (int) radius);
 	}
 
 	private Color computeColorFromMass(double mass) {
@@ -100,7 +96,7 @@ public class Display extends JFrame implements KeyListener {
 	}
 
 	public synchronized void insertNewData(Message message) {
-		worldHistory.add((ArrayList<MassObject>) message.getData());
+		worldHistory.add((ArrayList<SpaceObject>) message.getData());
 		if (worldHistory.size() > historyLimit) {
 			worldHistory.remove(R.nextInt(historyLimit / 2));
 		}

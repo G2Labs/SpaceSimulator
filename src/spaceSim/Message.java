@@ -2,16 +2,16 @@ package spaceSim;
 
 import java.util.List;
 
-import physics.MassObject;
+import physics.SpaceObject;
 
 public class Message {
-	private List<MassObject> listOfDots;
+	private List<SpaceObject> listOfDots;
 
-	public Message(List<MassObject> list) {
+	public Message(List<SpaceObject> list) {
 		listOfDots = list;
 	}
 
-	public List<MassObject> getData() {
+	public List<SpaceObject> getData() {
 		return listOfDots;
 	}
 }

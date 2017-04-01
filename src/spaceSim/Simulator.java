@@ -5,10 +5,11 @@ import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 
 import physics.MassObject;
+import physics.SpaceObject;
 import physics.Vector2D;
 
 public class Simulator extends Thread {
-	private ArrayList<MassObject> world;
+	private ArrayList<SpaceObject> world;
 	private final BlockingQueue<Message> queue;
 	private final Random R = new Random();
 	private boolean canRun = true;
@@ -41,16 +42,16 @@ public class Simulator extends Thread {
 	}
 
 	private void oneIteration() {
-		ArrayList<MassObject> newWorld = new ArrayList<>();
+		ArrayList<SpaceObject> newWorld = new ArrayList<>();
 		newWorld.add(world.get(0));
 		for (int i = 1; i < world.size(); i++) {
-			MassObject m1 = world.get(i);
+			SpaceObject m1 = world.get(i);
 			Vector2D gravity = new Vector2D();
 
 			for (int j = 0; j < world.size(); j++) {
 				if (i == j)
 					continue;
-				MassObject m2 = world.get(j);
+				SpaceObject m2 = world.get(j);
 
 				Vector2D gravityPortion = m2.getPosition().sub(m1.getPosition());
 				double dist = gravityPortion.mag();

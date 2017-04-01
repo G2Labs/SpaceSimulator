@@ -1,6 +1,6 @@
 package physics;
 
-public class MassObject implements Comparable<MassObject> {
+public class MassObject implements SpaceObject {
 	private static double deltaT = 1;
 	private static int cnt = 0;
 
@@ -41,18 +41,22 @@ public class MassObject implements Comparable<MassObject> {
 		this.mass = (mass > 0) ? mass : 1;
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}
 
+	@Override
 	public double getMass() {
 		return mass;
 	}
 
+	@Override
 	public Vector2D getPosition() {
 		return position;
 	}
 
+	@Override
 	public void move() {
 		velocity = velocity.add(acceleration.mul(deltaT));
 		position = position.add(velocity.mul(deltaT));
@@ -62,18 +66,20 @@ public class MassObject implements Comparable<MassObject> {
 		deltaT = dt;
 	}
 
+	@Override
 	public Vector2D getVelocity() {
 		return velocity;
 	}
 
+	@Override
 	public void applyForce(Vector2D force) {
 		this.force = force;
 		this.acceleration = this.force.norm().mul(force.mag() / mass);
 	}
 
 	@Override
-	public int compareTo(MassObject m0) {
-		double dm = this.mass - m0.mass;
+	public int compareTo(SpaceObject m0) {
+		double dm = this.mass - m0.getMass();
 		return (dm < 0) ? 1 : ((dm > 0) ? -1 : 0);
 	}
 
@@ -89,7 +95,8 @@ public class MassObject implements Comparable<MassObject> {
 		return sb.toString();
 	}
 
-	public MassObject copy() {
+	@Override
+	public SpaceObject copy() {
 		MassObject result = new MassObject(name, mass, position, velocity);
 		result.acceleration = acceleration;
 		result.force = force;
