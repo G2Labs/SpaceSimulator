@@ -3,6 +3,7 @@ package physics;
 import java.util.ArrayList;
 
 public class Universe extends ArrayList<SpaceObject> {
+	private static final double MIN_DISTANCE = 3;
 
 	public void move() {
 		for (SpaceObject so : this)
@@ -42,26 +43,32 @@ public class Universe extends ArrayList<SpaceObject> {
 	}
 
 	public void applyCollisions() {
-		boolean hasSomethingCollided;
+		boolean somethingHasCollided;
 		do {
 			this.sort(null);
-			hasSomethingCollided = false;
+			somethingHasCollided = false;
 			for (int i = 0; i < size(); i++) {
 				for (int j = 0; j < size(); j++) {
 					if (i == j)
 						continue;
 					SpaceObject s0 = get(i);
 					SpaceObject s1 = get(j);
-					if (s0.getPosition().sub(s1.getPosition()).mag() < 4) {
-						hasSomethingCollided = true;
-						SpaceObject s2 = s0.collideWith(s1);
-						remove(s0);
-						remove(s1);
-						add(s2);
+					if (areTooClose(s0, s1)) {
+						somethingHasCollided = true;
+						collideThem(s0, s1);
 					}
 				}
 			}
-		} while (hasSomethingCollided);
+		} while (somethingHasCollided);
+	}
 
+	private boolean areTooClose(SpaceObject s0, SpaceObject s1) {
+		return s0.getPosition().sub(s1.getPosition()).mag() < MIN_DISTANCE;
+	}
+
+	private void collideThem(SpaceObject s0, SpaceObject s1) {
+		add(s0.collideWith(s1));
+		remove(s0);
+		remove(s1);
 	}
 }

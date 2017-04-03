@@ -1,12 +1,15 @@
 package spaceSim;
 
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 
+import physics.SpaceObject;
+
 public class DisplayThread extends Thread {
-	private BlockingQueue<Message> queue;
+	private BlockingQueue<List<SpaceObject>> queue;
 	private Display display;
 
-	public DisplayThread(BlockingQueue<Message> queue) {
+	public DisplayThread(BlockingQueue<List<SpaceObject>> queue) {
 		this.queue = queue;
 	}
 

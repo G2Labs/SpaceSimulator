@@ -12,6 +12,14 @@ public class MassObject implements SpaceObject {
 	private Vector2D velocity = new Vector2D();
 	private Vector2D position = new Vector2D();
 
+	public static void setDeltaT(double dt) {
+		deltaT = dt;
+	}
+
+	public static double getDeltaT() {
+		return deltaT;
+	}
+
 	public MassObject() {
 	}
 
@@ -42,13 +50,13 @@ public class MassObject implements SpaceObject {
 	}
 
 	@Override
-	public String getName() {
-		return name;
+	public double getMass() {
+		return mass;
 	}
 
 	@Override
-	public double getMass() {
-		return mass;
+	public String getName() {
+		return name;
 	}
 
 	@Override
@@ -57,24 +65,47 @@ public class MassObject implements SpaceObject {
 	}
 
 	@Override
-	public void move() {
-		velocity = velocity.add(acceleration.mul(deltaT));
-		position = position.add(velocity.mul(deltaT));
-	}
-
-	public static void setDeltaT(double dt) {
-		deltaT = dt;
+	public Vector2D getVelocity() {
+		return velocity;
 	}
 
 	@Override
-	public Vector2D getVelocity() {
-		return velocity;
+	public void move() {
+		velocity = velocity.add(acceleration.mul(deltaT));
+		position = position.add(velocity.mul(deltaT));
 	}
 
 	@Override
 	public void applyForce(Vector2D force) {
 		this.force = force;
 		this.acceleration = this.force.norm().mul(force.mag() / mass);
+	}
+
+	@Override
+	public SpaceObject copy() {
+		MassObject result = new MassObject(name, mass, position, velocity);
+		result.acceleration = acceleration;
+		result.force = force;
+		return result;
+	}
+
+	@Override
+	public SpaceObject collideWith(SpaceObject m1) {
+		String nameSum = "";
+		if (this.getMass() > m1.getMass())
+			nameSum = this.getName() + "." + m1.getName();
+		else
+			nameSum = m1.getName() + "." + this.getName();
+		double massSum = this.getMass() + m1.getMass();
+
+		Vector2D collVelocity = this.getVelocity().mul(this.getMass() / massSum);
+		collVelocity = collVelocity.add(m1.getVelocity().mul(m1.getMass() / massSum));
+
+		Vector2D collPosition = m1.getPosition().sub(this.getPosition());
+		collPosition = collPosition.mul(m1.getMass() / massSum);
+		collPosition = collPosition.add(this.getPosition());
+
+		return new MassObject(nameSum, massSum, collPosition, collVelocity);
 	}
 
 	@Override
@@ -93,28 +124,5 @@ public class MassObject implements SpaceObject {
 		sb.append("a: ").append(acceleration).append("; ");
 		sb.append("F: ").append(force).append("]");
 		return sb.toString();
-	}
-
-	@Override
-	public SpaceObject copy() {
-		MassObject result = new MassObject(name, mass, position, velocity);
-		result.acceleration = acceleration;
-		result.force = force;
-		return result;
-	}
-
-	@Override
-	public SpaceObject collideWith(SpaceObject m1) {
-		String m2N = this.getName() + "." + m1.getName();
-		double m2M = this.getMass() + m1.getMass();
-
-		Vector2D m2V = this.getVelocity().mul(this.getMass() / m2M);
-		m2V = m2V.add(m1.getVelocity().mul(m1.getMass() / m2M));
-
-		Vector2D m2P = m1.getPosition().sub(this.getPosition());
-		m2P = m2P.mul(m1.getMass() / m2M);
-		m2P = m2P.add(this.getPosition());
-
-		return new MassObject(m2N, m2M, m2P, m2V);
 	}
 }

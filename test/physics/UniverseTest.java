@@ -95,5 +95,6 @@ public class UniverseTest {
 			}
 		}
 		assertEquals("Sun.Planetoid", u.get(0).getName());
+		assertEquals(42, u.get(0).getMass(), 0.05);
 	}
 }

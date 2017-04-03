@@ -41,12 +41,14 @@ public class MassObjectTest {
 		MassObject.setDeltaT(1);
 		SpaceObject m0 = new MassObject();
 		m0.move();
+		assertEquals(1, MassObject.getDeltaT(), 0.05);
 		assertEquals(new Vector2D(), m0.getPosition());
 		m0 = new MassObject("Some name", 1, new Vector2D(), new Vector2D(1, 1));
 		m0.move();
 		assertEquals(new Vector2D(1, 1), m0.getPosition());
 
 		MassObject.setDeltaT(0.1);
+		assertEquals(0.1, MassObject.getDeltaT(), 0.05);
 		m0.move();
 		assertEquals(new Vector2D(1.1, 1.1), m0.getPosition());
 		assertEquals(new Vector2D(1, 1), m0.getVelocity());
@@ -111,11 +113,15 @@ public class MassObjectTest {
 	public void testCollideWithAnotherObject() throws Exception {
 		SpaceObject m0 = new MassObject("SUN", 40, new Vector2D(1, 0), new Vector2D(1, 0));
 		SpaceObject m1 = new MassObject("Planetoid", 2, new Vector2D(4, 0), new Vector2D(-1, 0));
+
 		SpaceObject m2 = m0.collideWith(m1);
+		assertEquals("SUN.Planetoid", m2.getName());
 		assertEquals(42, m2.getMass(), 0.05);
 		assertEquals(new Vector2D(0.9054, 0), m2.getVelocity());
 		assertEquals(new Vector2D(1.143, 0), m2.getPosition());
+
 		m2 = m1.collideWith(m0);
+		assertEquals("SUN.Planetoid", m2.getName());
 		assertEquals(42, m2.getMass(), 0.05);
 		assertEquals(new Vector2D(0.9054, 0), m2.getVelocity());
 		assertEquals(new Vector2D(1.143, 0), m2.getPosition());
