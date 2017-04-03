@@ -92,7 +92,8 @@ public class MassObjectTest {
 	public void testToString() throws Exception {
 		SpaceObject m0 = new MassObject("Black hole", 100.0, new Vector2D(1, 1), new Vector2D(5, 5));
 		m0.applyForce(new Vector2D(30, -20));
-		assertEquals("[Black hole; mass: 100,0; pos: [1,00; 1,00]; v: [5,00; 5,00]; a: [0,30; -0,20]; F: [30,00; -20,00]]",
+		assertEquals(
+				"[Black hole; mass: 100,0; pos: [1,000; 1,000]; v: [5,000; 5,000]; a: [0,300; -0,200]; F: [30,000; -20,000]]",
 				m0.toString());
 	}
 
@@ -104,5 +105,19 @@ public class MassObjectTest {
 		assertEquals(23.4, m1.getMass(), 0.05);
 		assertEquals(new Vector2D(1, 2), m1.getPosition());
 		assertEquals(new Vector2D(4, 5), m1.getVelocity());
+	}
+
+	@Test
+	public void testCollideWithAnotherObject() throws Exception {
+		SpaceObject m0 = new MassObject("SUN", 40, new Vector2D(1, 0), new Vector2D(1, 0));
+		SpaceObject m1 = new MassObject("Planetoid", 2, new Vector2D(4, 0), new Vector2D(-1, 0));
+		SpaceObject m2 = m0.collideWith(m1);
+		assertEquals(42, m2.getMass(), 0.05);
+		assertEquals(new Vector2D(0.9054, 0), m2.getVelocity());
+		assertEquals(new Vector2D(1.143, 0), m2.getPosition());
+		m2 = m1.collideWith(m0);
+		assertEquals(42, m2.getMass(), 0.05);
+		assertEquals(new Vector2D(0.9054, 0), m2.getVelocity());
+		assertEquals(new Vector2D(1.143, 0), m2.getPosition());
 	}
 }

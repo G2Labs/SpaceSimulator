@@ -102,4 +102,19 @@ public class MassObject implements SpaceObject {
 		result.force = force;
 		return result;
 	}
+
+	@Override
+	public SpaceObject collideWith(SpaceObject m1) {
+		String m2N = this.getName() + "." + m1.getName();
+		double m2M = this.getMass() + m1.getMass();
+
+		Vector2D m2V = this.getVelocity().mul(this.getMass() / m2M);
+		m2V = m2V.add(m1.getVelocity().mul(m1.getMass() / m2M));
+
+		Vector2D m2P = m1.getPosition().sub(this.getPosition());
+		m2P = m2P.mul(m1.getMass() / m2M);
+		m2P = m2P.add(this.getPosition());
+
+		return new MassObject(m2N, m2M, m2P, m2V);
+	}
 }

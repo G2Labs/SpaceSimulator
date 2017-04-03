@@ -14,4 +14,6 @@ public interface SpaceObject extends Comparable<SpaceObject> {
 	public void move();
 
 	public SpaceObject copy();
+
+	public SpaceObject collideWith(SpaceObject so1);
 }

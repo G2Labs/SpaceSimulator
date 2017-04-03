@@ -74,4 +74,26 @@ public class UniverseTest {
 		assertEquals(new Vector2D(0.02, 0), u.get(0).getPosition());
 		assertEquals(new Vector2D(9.6, 0), u.get(1).getPosition());
 	}
+
+	@Test
+	public void testForCollisions() throws Exception {
+		MassObject.setDeltaT(1);
+
+		Universe u = new Universe();
+		u.add(new MassObject("Planetoid", 2, new Vector2D(10, 0), new Vector2D(-1, 0)));
+		u.add(new MassObject("Sun", 40, new Vector2D(), new Vector2D(1, 0)));
+
+		for (int t = 0; t < 20; t++) {
+			u.applyCollisions();
+			u.move();
+
+			if (t < 4)
+				assertEquals(2, u.size());
+			else {
+				assertEquals(1, u.size());
+				break;
+			}
+		}
+		assertEquals("Sun.Planetoid", u.get(0).getName());
+	}
 }

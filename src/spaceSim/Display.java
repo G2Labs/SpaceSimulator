@@ -12,11 +12,14 @@ import java.util.Random;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import physics.MassObject;
 import physics.SpaceObject;
+import physics.Vector2D;
 
 public class Display extends JFrame implements KeyListener {
 	private ArrayList<ArrayList<SpaceObject>> worldHistory = new ArrayList<>();
 	private Double scale = 1.0;
+	private Vector2D center;
 	private Integer cnt = 0;
 	private Integer historyLimit = 50;
 	private static final Random R = new Random();
@@ -30,17 +33,18 @@ public class Display extends JFrame implements KeyListener {
 		this.setVisible(true);
 		addKeyListener(this);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		center = new Vector2D(getWidth() / 2, this.getHeight() / 2);
 	}
 
 	public class DrawArea extends JPanel {
 		public DrawArea() {
 			setPreferredSize(new Dimension(1000, 800));
+			setBackground(Color.BLACK);
 		}
 
 		@Override
 		protected synchronized void paintComponent(Graphics g) {
 			super.paintComponent(g);
-			Dimension screen = this.getSize();
 			int cntOnScreen = 0;
 
 			for (int i = 0; i < worldHistory.size(); i++) {
@@ -49,7 +53,7 @@ public class Display extends JFrame implements KeyListener {
 
 				for (int j = 0; j < currentWorld.size(); j++) {
 					SpaceObject m = currentWorld.get(j);
-					if (isObjectOnScreen(m, screen)) {
+					if (isObjectOnScreen(m)) {
 						drawCosmicElement(g, m, currentOne);
 						if (currentOne)
 							cntOnScreen++;
@@ -61,46 +65,54 @@ public class Display extends JFrame implements KeyListener {
 			sb.append("Scale:").append(String.format("%.1f", scale)).append(" ");
 			sb.append("Objects: ").append(cntOnScreen).append(" ");
 			sb.append("Iteration: ").append(cnt);
-			g.setColor(Color.BLACK);
-			g.drawString(sb.toString(), 10, (int) screen.getHeight() - 10);
+			g.setColor(Color.GRAY);
+			g.drawString(sb.toString(), 10, this.getHeight() - 10);
 		}
 	}
 
-	private boolean isObjectOnScreen(SpaceObject so, Dimension screen) {
-		double x = so.getPosition().getX();
-		double y = so.getPosition().getY();
-
-		if ((x * scale > screen.getWidth()) || (x < 0))
+	private boolean isObjectOnScreen(SpaceObject so) {
+		Vector2D v = transformObjectCoordToScreenCoord(so);
+		if ((v.getX() < 0) || (v.getX() > this.getWidth()))
 			return false;
-		if ((y * scale > (screen.getHeight() - 30)) || (y < 0))
+		if ((v.getY() > this.getHeight()) || (v.getY() < 0))
 			return false;
 		return true;
 	}
 
+	private Vector2D transformObjectCoordToScreenCoord(SpaceObject so) {
+		double x = so.getPosition().getX();
+		double y = so.getPosition().getY();
+
+		return center.add(new Vector2D(x, -y).mul(scale));
+	}
+
 	private void drawCosmicElement(Graphics g, SpaceObject so, boolean isCurrent) {
-		double minR = 3;
-		double radius = (isCurrent) ? ((so.getMass() > 10) ? so.getMass() : minR) : minR;
-		double x = (so.getPosition().getX()) - (radius / 2);
-		double y = (so.getPosition().getY()) - (radius / 2);
+		double minR = 2, maxR = 10;
+		double radius = (isCurrent) ? ((so.getMass() > maxR) ? so.getMass() : minR) : minR;
+		if (so.getName().contains("Sun"))
+			radius *= scale;
+		else
+			radius = ((radius > maxR) ? maxR : radius) * scale;
+		radius = (radius < minR) ? minR : radius;
+		drawOvalInSpace(g, so, radius);
+	}
 
-		x *= scale;
-		y *= scale;
-		radius = (radius * scale < minR) ? minR : radius * scale;
-
+	private void drawOvalInSpace(Graphics g, SpaceObject so, double radius) {
+		Vector2D v = transformObjectCoordToScreenCoord(so).sub(new Vector2D(radius / 2, radius / 2));
 		g.setColor(computeColorFromMass(so.getMass()));
-		g.fillOval((int) x, (int) y, (int) radius, (int) radius);
+		g.fillOval((int) v.getX(), (int) v.getY(), (int) radius, (int) radius);
 	}
 
 	private Color computeColorFromMass(double mass) {
 		if (mass > 10)
 			return Color.YELLOW;
 		if (mass > 5)
-			return Color.BLUE;
+			return Color.CYAN;
 		if (mass > 2)
-			return Color.DARK_GRAY;
+			return Color.LIGHT_GRAY;
 		if (mass > 1)
 			return Color.RED;
-		return Color.BLACK;
+		return Color.WHITE;
 	}
 
 	public synchronized void insertNewData(Message message) {
@@ -120,8 +132,30 @@ public class Display extends JFrame implements KeyListener {
 				scale += 0.1;
 			break;
 		case KeyEvent.VK_S:
-			if (scale > 0.1)
+			if (scale > 0.2)
 				scale -= 0.1;
+			break;
+		case KeyEvent.VK_RIGHT:
+			center = center.add(new Vector2D(-10, 0));
+			break;
+		case KeyEvent.VK_LEFT:
+			center = center.add(new Vector2D(10, 0));
+			break;
+		case KeyEvent.VK_UP:
+			center = center.add(new Vector2D(0, 10));
+			break;
+		case KeyEvent.VK_DOWN:
+			center = center.add(new Vector2D(0, -10));
+			break;
+		case KeyEvent.VK_R:
+			center = new Vector2D(getWidth() / 2, getHeight() / 2);
+			scale = 1.0;
+			break;
+		case KeyEvent.VK_T:
+			MassObject.setDeltaT(1);
+			break;
+		case KeyEvent.VK_G:
+			MassObject.setDeltaT(0.2);
 			break;
 		default:
 			break;

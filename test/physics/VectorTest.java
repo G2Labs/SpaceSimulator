@@ -84,6 +84,15 @@ public class VectorTest {
 	@Test
 	public void testToString() throws Exception {
 		Vector2D v1 = new Vector2D(1, 2);
-		assertEquals("[1,00; 2,00]", v1.toString());
+		assertEquals("[1,000; 2,000]", v1.toString());
+	}
+
+	@Test
+	public void testTurn90Degree() throws Exception {
+		Vector2D v1 = new Vector2D(2, 1);
+		assertEquals(new Vector2D(1, -2), v1.turn90Degree());
+		assertEquals(new Vector2D(-2, -1), v1.turn90Degree().turn90Degree());
+		assertEquals(new Vector2D(-1, 2), v1.turn90Degree().turn90Degree().turn90Degree());
+		assertEquals(v1, v1.turn90Degree().turn90Degree().turn90Degree().turn90Degree());
 	}
 }

@@ -41,4 +41,27 @@ public class Universe extends ArrayList<SpaceObject> {
 		return gravPart;
 	}
 
+	public void applyCollisions() {
+		boolean hasSomethingCollided;
+		do {
+			this.sort(null);
+			hasSomethingCollided = false;
+			for (int i = 0; i < size(); i++) {
+				for (int j = 0; j < size(); j++) {
+					if (i == j)
+						continue;
+					SpaceObject s0 = get(i);
+					SpaceObject s1 = get(j);
+					if (s0.getPosition().sub(s1.getPosition()).mag() < 4) {
+						hasSomethingCollided = true;
+						SpaceObject s2 = s0.collideWith(s1);
+						remove(s0);
+						remove(s1);
+						add(s2);
+					}
+				}
+			}
+		} while (hasSomethingCollided);
+
+	}
 }

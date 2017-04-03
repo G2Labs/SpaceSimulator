@@ -1,7 +1,7 @@
 package physics;
 
 public class Vector2D {
-	private double x, y, size;
+	private double x, y;
 
 	public Vector2D() {
 		this.x = 0;
@@ -11,11 +11,10 @@ public class Vector2D {
 	public Vector2D(double x, double y) {
 		this.x = x;
 		this.y = y;
-		this.size = Math.sqrt(x * x + y * y);
 	}
 
 	public double mag() {
-		return size;
+		return Math.sqrt(x * x + y * y);
 	}
 
 	public Vector2D add(Vector2D v2) {
@@ -39,6 +38,7 @@ public class Vector2D {
 	}
 
 	public Vector2D norm() {
+		double size = mag();
 		if (size > 0)
 			return new Vector2D(this.x / size, this.y / size);
 		else
@@ -49,17 +49,21 @@ public class Vector2D {
 	public boolean equals(Object vec) {
 		Vector2D v = (Vector2D) vec;
 
-		boolean xEqual = Math.abs(this.x - v.x) < 0.0000001;
-		boolean yEqual = Math.abs(this.y - v.y) < 0.0000001;
+		boolean xEqual = Math.abs(this.x - v.x) < 0.001;
+		boolean yEqual = Math.abs(this.y - v.y) < 0.001;
 		return (xEqual && yEqual);
 	}
 
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("[").append(String.format("%.2f", this.x)).append("; ");
-		sb.append(String.format("%.2f", this.y)).append("]");
+		sb.append("[").append(String.format("%.3f", this.x)).append("; ");
+		sb.append(String.format("%.3f", this.y)).append("]");
 
 		return sb.toString();
+	}
+
+	public Vector2D turn90Degree() {
+		return new Vector2D(getY(), -getX());
 	}
 }
