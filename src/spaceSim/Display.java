@@ -55,7 +55,7 @@ public class Display extends JFrame implements KeyListener {
 		@Override
 		protected synchronized void paintComponent(Graphics g) {
 			super.paintComponent(g);
-
+			int cntObjs = worldHistory.get(worldHistory.size() - 1).size();
 			for (int i = 0; i < worldHistory.size(); i++) {
 				boolean currentOne = (i == worldHistory.size() - 1);
 				List<SpaceObject> currentWorld = worldHistory.get(i);
@@ -70,7 +70,7 @@ public class Display extends JFrame implements KeyListener {
 
 			StringBuilder sb = new StringBuilder();
 			sb.append("Scale:").append(String.format("%.1f", scaleOfScreen)).append(" ");
-			sb.append("Objects: ").append(worldHistory.get(worldHistory.size() - 1).size()).append(" ");
+			sb.append("Objects: ").append(cntObjs).append(" ");
 			sb.append("Iteration: ").append(iterationCnt);
 			g.setColor(Color.GRAY);
 			g.drawString(sb.toString(), 10, this.getHeight() - 10);
